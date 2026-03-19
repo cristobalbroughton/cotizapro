@@ -20,8 +20,22 @@ export function useQuotes() {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
-    if (error) setError(error.message)
-    else setQuotes(data || [])
+    if (error) {
+      setError(error.message)
+    } else {
+      // Debug: ver estructura real que devuelve Supabase
+      if (data?.length > 0) {
+        console.log('[CotizaPro] Estructura de quote desde Supabase:', {
+          id:         data[0].id,
+          total:      data[0].total,
+          total_type: typeof data[0].total,
+          subtotal:   data[0].subtotal,
+          iva_amount: data[0].iva_amount,
+          items_len:  data[0].items?.length,
+        })
+      }
+      setQuotes(data || [])
+    }
     setLoading(false)
   }, [user])
 
@@ -83,7 +97,17 @@ export function useQuotes() {
   }
 
   async function updateStatus(id, status) {
-    return updateQuote(id, { status })
+    // No pasar por updateQuote: solo actualizar el estado sin tocar los totales
+    const { data, error } = await supabase
+      .from('quotes')
+      .update({ status })
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .select()
+      .single()
+
+    if (!error) setQuotes(prev => prev.map(q => q.id === id ? data : q))
+    return { data, error }
   }
 
   async function getQuote(id) {

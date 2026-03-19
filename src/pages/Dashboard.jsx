@@ -27,9 +27,10 @@ export default function Dashboard() {
   // Para el dashboard mostramos solo las últimas 5 del array ya cargado
   const recent = quotes.slice(0, 5)
 
+  // parseFloat() es necesario: Supabase devuelve NUMERIC como string "14673.00"
   const totalRevenue = quotes
     .filter(q => q.status === 'aceptada')
-    .reduce((s, q) => s + (q.total || 0), 0)
+    .reduce((s, q) => s + (parseFloat(q.total) || 0), 0)
 
   function handleNew() {
     if (!canCreate) setShowUpgrade(true)
