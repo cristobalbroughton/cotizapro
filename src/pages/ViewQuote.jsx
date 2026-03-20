@@ -347,8 +347,12 @@ export default function ViewQuote() {
             {showIva && (
               <>
                 <div className="flex justify-between text-sm py-2 border-b border-gray-100">
-                  <span className="text-gray-500">Subtotal neto</span>
+                  <span className="text-gray-500">Subtotal</span>
                   <span className="tabular-nums">{formatCLP(totals.subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm py-2 border-b border-gray-100">
+                  <span className="text-gray-500">Monto Neto</span>
+                  <span className="tabular-nums">{formatCLP(totals.subtotal - totals.iva_amount)}</span>
                 </div>
                 <div className="flex justify-between text-sm py-2 border-b border-gray-100">
                   <span className="text-gray-500">IVA (19%)</span>

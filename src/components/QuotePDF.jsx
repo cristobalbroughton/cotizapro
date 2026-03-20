@@ -289,8 +289,9 @@ const s = StyleSheet.create({
 export default function QuotePDF({ quote, profile }) {
   const items    = quote.items || []
   const subtotal = items.reduce((acc, it) => acc + itemSubtotal(it.quantity, it.unit_price), 0)
-  const iva      = Math.round(subtotal * 0.19)
-  const total    = subtotal + iva
+  const neto     = Math.floor(subtotal / 1.19)
+  const iva      = subtotal - neto
+  const total    = subtotal
   const showIva  = quote.show_iva ?? true
 
   const emisionDate = fDate(quote.created_at)
@@ -401,8 +402,12 @@ export default function QuotePDF({ quote, profile }) {
             {showIva && (
               <>
                 <View style={s.totalLineRow}>
-                  <Text style={s.totalLineLabel}>Subtotal neto</Text>
+                  <Text style={s.totalLineLabel}>Subtotal</Text>
                   <Text style={s.totalLineValue}>{fCLP(subtotal)}</Text>
+                </View>
+                <View style={s.totalLineRow}>
+                  <Text style={s.totalLineLabel}>Monto Neto</Text>
+                  <Text style={s.totalLineValue}>{fCLP(neto)}</Text>
                 </View>
                 <View style={s.totalLineRow}>
                   <Text style={s.totalLineLabel}>IVA (19%)</Text>

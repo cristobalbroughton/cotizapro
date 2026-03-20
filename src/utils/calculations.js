@@ -15,12 +15,12 @@ export function calcItemSubtotal(quantity, unitPrice) {
  * @returns {{ subtotal, iva_amount, total }}
  */
 export function calcQuoteTotals(items = []) {
-  const subtotal = items.reduce((acc, item) => {
-    return acc + calcItemSubtotal(item.quantity, item.unit_price)
-  }, 0)
-
-  const iva_amount = Math.round(subtotal * IVA_RATE)
-  const total      = subtotal + iva_amount
+  // El usuario ingresa el precio FINAL (IVA incluido).
+  // Se extrae neto/IVA hacia atrás: neto = floor(total / 1.19)
+  const subtotal   = items.reduce((acc, item) => acc + calcItemSubtotal(item.quantity, item.unit_price), 0)
+  const neto       = Math.floor(subtotal / (1 + IVA_RATE))
+  const iva_amount = subtotal - neto
+  const total      = subtotal  // precio final === subtotal
 
   return { subtotal, iva_amount, total }
 }
