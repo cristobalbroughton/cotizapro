@@ -21,7 +21,7 @@ const statusLabel = {
 export default function Dashboard() {
   const { profile, isFree } = useAuth()
   const navigate = useNavigate()
-  const { quotes, loading, error, fetchQuotes, quotesCount, canCreate } = useQuotes()
+  const { quotes, loading, error, fetchQuotes, quotesCount, quotesCreatedCount, canCreate } = useQuotes()
   const [showUpgrade, setShowUpgrade] = useState(false)
 
   // Para el dashboard mostramos solo las últimas 5 del array ya cargado
@@ -61,7 +61,7 @@ export default function Dashboard() {
 
       {/* ── Indicador de plan ── */}
       {isFree
-        ? <PlanUsageBar used={quotesCount} limit={FREE_LIMIT} onUpgrade={() => setShowUpgrade(true)} />
+        ? <PlanUsageBar used={quotesCreatedCount} limit={FREE_LIMIT} onUpgrade={() => setShowUpgrade(true)} />
         : <ProBadge />
       }
 

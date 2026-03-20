@@ -82,6 +82,14 @@ export function AuthProvider({ children }) {
     return { data, error }
   }
 
+  // Incrementa el contador local sin llamar a la BD
+  // (el trigger en Supabase ya lo actualizó al insertar la cotización)
+  function incrementQuotesCount() {
+    setProfile(prev =>
+      prev ? { ...prev, quotes_created_count: (prev.quotes_created_count || 0) + 1 } : prev
+    )
+  }
+
   const value = {
     user,
     profile,
@@ -92,8 +100,10 @@ export function AuthProvider({ children }) {
     resetPassword,
     updatePassword,
     updateProfile,
+    incrementQuotesCount,
     isPro: profile?.plan === 'pro',
     isFree: profile?.plan === 'free' || !profile?.plan,
+    quotesCreatedCount: profile?.quotes_created_count || 0,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

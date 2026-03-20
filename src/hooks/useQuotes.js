@@ -6,7 +6,7 @@ import { calcQuoteTotals } from '../utils/calculations'
 const FREE_LIMIT = 5
 
 export function useQuotes() {
-  const { user, isFree } = useAuth()
+  const { user, isFree, quotesCreatedCount, incrementQuotesCount } = useAuth()
   const [quotes, setQuotes]   = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError]     = useState(null)
@@ -28,12 +28,11 @@ export function useQuotes() {
   useEffect(() => { fetchQuotes() }, [fetchQuotes])
 
   async function createQuote(quoteData) {
-    // Verificar límite plan free
-    if (isFree && quotes.length >= FREE_LIMIT) {
-      return { error: { message: `El plan gratuito permite máximo ${FREE_LIMIT} cotizaciones.` } }
+    // Límite basado en el contador histórico, no en las que existen ahora
+    if (isFree && quotesCreatedCount >= FREE_LIMIT) {
+      return { error: { message: `El plan gratuito permite crear máximo ${FREE_LIMIT} cotizaciones.` } }
     }
 
-    // Obtener número correlativo
     const { data: numData, error: numError } = await supabase
       .rpc('get_next_quote_number', { p_user_id: user.id })
 
@@ -52,7 +51,12 @@ export function useQuotes() {
       .select()
       .single()
 
-    if (!error) setQuotes(prev => [data, ...prev])
+    if (!error) {
+      setQuotes(prev => [data, ...prev])
+      // El trigger en BD ya incrementó quotes_created_count.
+      // Actualizamos el estado local para que la UI sea inmediata.
+      incrementQuotesCount()
+    }
     return { data, error }
   }
 
@@ -78,12 +82,12 @@ export function useQuotes() {
       .eq('id', id)
       .eq('user_id', user.id)
 
+    // Solo elimina de la lista local. El contador histórico NO se toca.
     if (!error) setQuotes(prev => prev.filter(q => q.id !== id))
     return { error }
   }
 
   async function updateStatus(id, status) {
-    // No pasar por updateQuote: solo actualizar el estado sin tocar los totales
     const { data, error } = await supabase
       .from('quotes')
       .update({ status })
@@ -117,7 +121,9 @@ export function useQuotes() {
     deleteQuote,
     updateStatus,
     getQuote,
-    canCreate: !isFree || quotes.length < FREE_LIMIT,
-    quotesCount: quotes.length,
+    // canCreate usa el historial, no el recuento actual
+    canCreate:          !isFree || quotesCreatedCount < FREE_LIMIT,
+    quotesCount:        quotes.length,           // cotizaciones actuales (para la lista)
+    quotesCreatedCount,                          // histórico (para el límite freemium)
   }
 }
