@@ -34,7 +34,19 @@ export default function Sidebar() {
           ${collapsed ? 'md:w-[60px]' : 'md:w-60'}
         `}
       >
-        <nav className="flex-1 py-3 px-2 space-y-1 overflow-hidden">
+        {/* Botón toggle — solo desktop, arriba del todo */}
+        <div className={`hidden md:flex border-b border-gray-100 p-2 ${collapsed ? 'justify-center' : 'justify-end'}`}>
+          <button
+            onClick={toggleCollapsed}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+            title={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
+          >
+            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
+        </div>
+
+        {/* Nav — sin overflow-hidden para que los tooltips no se recorten */}
+        <nav className="flex-1 py-3 px-2 space-y-1">
           {links.map(({ to, icon: Icon, label }) => (
             <NavLink
               key={to}
@@ -50,6 +62,8 @@ export default function Sidebar() {
               }
             >
               <Icon size={18} className="flex-shrink-0" />
+
+              {/* Texto — overflow en el span, no en el nav */}
               <span
                 className={`whitespace-nowrap overflow-hidden transition-all duration-300 ${
                   collapsed ? 'md:w-0 md:opacity-0' : 'w-auto opacity-100'
@@ -58,26 +72,15 @@ export default function Sidebar() {
                 {label}
               </span>
 
-              {/* Tooltip solo en desktop cuando está colapsado */}
+              {/* Tooltip derecho — solo desktop colapsado */}
               {collapsed && (
-                <span className="hidden md:block absolute left-full ml-3 px-2 py-1 text-xs bg-gray-800 text-white rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
+                <span className="hidden md:block absolute left-full top-1/2 -translate-y-1/2 ml-2 px-2 py-1 text-xs bg-gray-800 text-white rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none">
                   {label}
                 </span>
               )}
             </NavLink>
           ))}
         </nav>
-
-        {/* Botón toggle — solo desktop */}
-        <div className="hidden md:flex border-t border-gray-200 p-2 justify-end">
-          <button
-            onClick={toggleCollapsed}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
-            title={collapsed ? 'Expandir sidebar' : 'Colapsar sidebar'}
-          >
-            {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-          </button>
-        </div>
       </aside>
     </>
   )
