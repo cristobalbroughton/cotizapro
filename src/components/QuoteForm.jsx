@@ -224,7 +224,7 @@ export default function QuoteForm({ initialData, onSubmit, loading, defaultShowI
                   <button
                     type="button"
                     onClick={() => removeItem(idx)}
-                    className="p-1 text-gray-300 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
+                    className="p-1 text-gray-300 hover:text-red-500 transition-colors md:opacity-0 md:group-hover:opacity-100"
                     title="Eliminar ítem"
                   >
                     <Trash2 size={15} />
@@ -314,7 +314,7 @@ export default function QuoteForm({ initialData, onSubmit, loading, defaultShowI
       </div>
 
       {/* ── Acciones ── */}
-      <div className="flex items-center justify-end gap-3 pb-4">
+      <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-3 pb-4">
         <button
           type="button"
           onClick={() => navigate(-1)}

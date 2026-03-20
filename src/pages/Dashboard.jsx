@@ -42,9 +42,9 @@ export default function Dashboard() {
       {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
 
       {/* ── Saludo ── */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
             Bienvenido, {profile?.full_name?.split(' ')[0] || 'usuario'} 👋
           </h2>
           <p className="text-gray-500 text-sm mt-1">
@@ -53,9 +53,10 @@ export default function Dashboard() {
             })}
           </p>
         </div>
-        <button onClick={handleNew} className="btn-primary flex items-center gap-2">
+        <button onClick={handleNew} className="btn-primary flex items-center gap-2 flex-shrink-0">
           <FilePlus size={16} />
-          Nueva cotización
+          <span className="hidden sm:inline">Nueva cotización</span>
+          <span className="sm:hidden">Nueva</span>
         </button>
       </div>
 
@@ -121,20 +122,38 @@ export default function Dashboard() {
               <Link
                 key={q.id}
                 to={`/quotes/${q.id}`}
-                className="flex items-center justify-between px-6 py-4 hover:bg-gray-50 transition-colors"
+                className="block px-4 sm:px-6 py-4 hover:bg-gray-50 transition-colors"
               >
-                <div className="flex items-center gap-4">
-                  <span className="text-sm font-mono text-gray-400">
-                    {formatQuoteNumber(q.quote_number)}
-                  </span>
-                  <span className="font-medium text-gray-800">{q.client_name}</span>
+                {/* Móvil */}
+                <div className="flex flex-col gap-1 sm:hidden">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-gray-800">{q.client_name}</span>
+                    <span className={statusBadge[q.status]}>{statusLabel[q.status]}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-gray-400 font-mono">
+                      {formatQuoteNumber(q.quote_number)} · {formatDate(q.created_at)}
+                    </span>
+                    <span className="font-semibold text-gray-800 tabular-nums text-sm">
+                      {formatCLP(q.total)}
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <span className="text-sm text-gray-500">{formatDate(q.created_at)}</span>
-                  <span className="font-semibold text-gray-900 tabular-nums">
-                    {formatCLP(q.total)}
-                  </span>
-                  <span className={statusBadge[q.status]}>{statusLabel[q.status]}</span>
+                {/* Desktop */}
+                <div className="hidden sm:flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm font-mono text-gray-400">
+                      {formatQuoteNumber(q.quote_number)}
+                    </span>
+                    <span className="font-medium text-gray-800">{q.client_name}</span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-500">{formatDate(q.created_at)}</span>
+                    <span className="font-semibold text-gray-900 tabular-nums">
+                      {formatCLP(q.total)}
+                    </span>
+                    <span className={statusBadge[q.status]}>{statusLabel[q.status]}</span>
+                  </div>
                 </div>
               </Link>
             ))}

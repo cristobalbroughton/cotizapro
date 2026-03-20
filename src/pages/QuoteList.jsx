@@ -51,9 +51,9 @@ export default function QuoteList() {
     <div className="max-w-6xl mx-auto space-y-5">
       {showUpgrade && <UpgradeModal onClose={() => setShowUpgrade(false)} />}
 
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <h2 className="text-2xl font-bold text-gray-900">Mis Cotizaciones</h2>
-        <button onClick={handleNew} className="btn-primary flex items-center gap-2">
+        <button onClick={handleNew} className="btn-primary flex items-center justify-center gap-2 w-full sm:w-auto">
           <FilePlus size={16} /> Nueva cotización
         </button>
       </div>
@@ -105,69 +105,88 @@ export default function QuoteList() {
             )}
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">N°</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Cliente</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Fecha</th>
-                <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Estado</th>
-                <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
+          <>
+            {/* ── Desktop: tabla ── */}
+            <table className="hidden md:table w-full text-sm">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">N°</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Cliente</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Fecha</th>
+                  <th className="text-right px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total</th>
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Estado</th>
+                  <th className="text-center px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filtered.map(q => (
+                  <tr
+                    key={q.id}
+                    className="hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={() => navigate(`/quotes/${q.id}`)}
+                  >
+                    <td className="px-4 py-3 font-mono text-gray-500 text-xs whitespace-nowrap">
+                      {formatQuoteNumber(q.quote_number)}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="font-medium text-gray-800">{q.client_name}</div>
+                      {q.client_email && (
+                        <div className="text-xs text-gray-400">{q.client_email}</div>
+                      )}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                      {formatDate(q.created_at)}
+                    </td>
+                    <td className="px-4 py-3 text-right font-semibold text-gray-800 tabular-nums whitespace-nowrap">
+                      {formatCLP(q.total)}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={statusBadge[q.status]}>{statusLabel[q.status]}</span>
+                    </td>
+                    <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
+                      <div className="flex items-center justify-center gap-1">
+                        <ActionBtn title="Ver" icon={<Eye size={15} />} hoverClass="hover:text-primary-700 hover:bg-primary-50" onClick={() => navigate(`/quotes/${q.id}`)} />
+                        <ActionBtn title="Editar" icon={<Pencil size={15} />} hoverClass="hover:text-amber-600 hover:bg-amber-50" onClick={() => navigate(`/quotes/${q.id}/edit`)} />
+                        <ActionBtn title="Eliminar" icon={<Trash2 size={15} />} hoverClass="hover:text-red-600 hover:bg-red-50" disabled={deleting === q.id} onClick={() => handleDelete(q.id)} />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* ── Móvil: cards apiladas ── */}
+            <div className="md:hidden divide-y divide-gray-100">
               {filtered.map(q => (
-                <tr
+                <div
                   key={q.id}
-                  className="hover:bg-gray-50 transition-colors cursor-pointer"
+                  className="p-4 hover:bg-gray-50 transition-colors cursor-pointer"
                   onClick={() => navigate(`/quotes/${q.id}`)}
                 >
-                  <td className="px-4 py-3 font-mono text-gray-500 text-xs whitespace-nowrap">
-                    {formatQuoteNumber(q.quote_number)}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-gray-800">{q.client_name}</div>
-                    {q.client_email && (
-                      <div className="text-xs text-gray-400">{q.client_email}</div>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
-                    {formatDate(q.created_at)}
-                  </td>
-                  <td className="px-4 py-3 text-right font-semibold text-gray-800 tabular-nums whitespace-nowrap">
-                    {formatCLP(q.total)}
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <span className={statusBadge[q.status]}>{statusLabel[q.status]}</span>
-                  </td>
-                  <td className="px-4 py-3" onClick={e => e.stopPropagation()}>
-                    <div className="flex items-center justify-center gap-1">
-                      <ActionBtn
-                        title="Ver cotización"
-                        icon={<Eye size={15} />}
-                        hoverClass="hover:text-primary-700 hover:bg-primary-50"
-                        onClick={() => navigate(`/quotes/${q.id}`)}
-                      />
-                      <ActionBtn
-                        title="Editar"
-                        icon={<Pencil size={15} />}
-                        hoverClass="hover:text-amber-600 hover:bg-amber-50"
-                        onClick={() => navigate(`/quotes/${q.id}/edit`)}
-                      />
-                      <ActionBtn
-                        title="Eliminar"
-                        icon={<Trash2 size={15} />}
-                        hoverClass="hover:text-red-600 hover:bg-red-50"
-                        disabled={deleting === q.id}
-                        onClick={() => handleDelete(q.id)}
-                      />
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <div className="font-medium text-gray-800">{q.client_name}</div>
+                      <div className="text-xs text-gray-400 font-mono mt-0.5">
+                        {formatQuoteNumber(q.quote_number)}
+                      </div>
                     </div>
-                  </td>
-                </tr>
+                    <span className={statusBadge[q.status]}>{statusLabel[q.status]}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-500">{formatDate(q.created_at)}</span>
+                    <div className="flex items-center gap-2" onClick={e => e.stopPropagation()}>
+                      <span className="font-semibold text-gray-800 tabular-nums text-sm mr-1">
+                        {formatCLP(q.total)}
+                      </span>
+                      <ActionBtn title="Ver" icon={<Eye size={15} />} hoverClass="hover:text-primary-700 hover:bg-primary-50" onClick={() => navigate(`/quotes/${q.id}`)} />
+                      <ActionBtn title="Editar" icon={<Pencil size={15} />} hoverClass="hover:text-amber-600 hover:bg-amber-50" onClick={() => navigate(`/quotes/${q.id}/edit`)} />
+                      <ActionBtn title="Eliminar" icon={<Trash2 size={15} />} hoverClass="hover:text-red-600 hover:bg-red-50" disabled={deleting === q.id} onClick={() => handleDelete(q.id)} />
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
 

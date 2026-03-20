@@ -2,23 +2,26 @@ import Header from './Header'
 import Sidebar from './Sidebar'
 import { Outlet } from 'react-router-dom'
 import { Mail, MessageCircle } from 'lucide-react'
+import { SidebarProvider } from '../context/SidebarContext'
 
 export default function Layout() {
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <Header />
-      <div className="flex flex-1 overflow-hidden">
-        <Sidebar />
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="flex flex-col min-h-full">
-            <div className="flex-1">
-              <Outlet />
+    <SidebarProvider>
+      <div className="flex flex-col h-screen bg-gray-50">
+        <Header />
+        <div className="flex flex-1 overflow-hidden">
+          <Sidebar />
+          <main className="flex-1 overflow-y-auto p-4 md:p-6">
+            <div className="flex flex-col min-h-full">
+              <div className="flex-1">
+                <Outlet />
+              </div>
+              <AppFooter />
             </div>
-            <AppFooter />
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   )
 }
 
@@ -27,14 +30,12 @@ function AppFooter() {
     <footer className="mt-12 pt-4 border-t border-gray-200">
       <div className="flex items-start justify-between flex-wrap gap-4 pb-4">
 
-        {/* Columna izquierda */}
         <div className="space-y-0.5">
           <p className="text-sm font-semibold text-gray-600">CotizaPro</p>
           <p className="text-xs text-gray-400">Hecho en Chile 🇨🇱</p>
           <p className="text-xs text-gray-400">© 2026</p>
         </div>
 
-        {/* Columna derecha */}
         <div className="text-right space-y-1">
           <p className="text-xs text-gray-400">¿Necesitas ayuda?</p>
           <a
