@@ -402,10 +402,6 @@ export default function QuotePDF({ quote, profile }) {
             {showIva && (
               <>
                 <View style={s.totalLineRow}>
-                  <Text style={s.totalLineLabel}>Subtotal</Text>
-                  <Text style={s.totalLineValue}>{fCLP(subtotal)}</Text>
-                </View>
-                <View style={s.totalLineRow}>
                   <Text style={s.totalLineLabel}>Monto Neto</Text>
                   <Text style={s.totalLineValue}>{fCLP(neto)}</Text>
                 </View>
