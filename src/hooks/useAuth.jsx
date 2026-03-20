@@ -36,6 +36,22 @@ export function AuthProvider({ children }) {
       .eq('id', userId)
       .single()
 
+    // Si el plan Pro venció, degradar a free automáticamente
+    if (data?.plan === 'pro' && data?.pro_expires_at) {
+      const expired = new Date(data.pro_expires_at) < new Date()
+      if (expired) {
+        const { data: downgraded } = await supabase
+          .from('profiles')
+          .update({ plan: 'free' })
+          .eq('id', userId)
+          .select()
+          .single()
+        setProfile(downgraded ?? { ...data, plan: 'free' })
+        setLoading(false)
+        return
+      }
+    }
+
     setProfile(data)
     setLoading(false)
   }
@@ -90,6 +106,9 @@ export function AuthProvider({ children }) {
     )
   }
 
+  const proExpiresAt   = profile?.pro_expires_at ? new Date(profile.pro_expires_at) : null
+  const proExpiresSoon = proExpiresAt != null && (proExpiresAt - new Date()) < 7 * 24 * 60 * 60 * 1000
+
   const value = {
     user,
     profile,
@@ -101,9 +120,11 @@ export function AuthProvider({ children }) {
     updatePassword,
     updateProfile,
     incrementQuotesCount,
-    isPro: profile?.plan === 'pro',
-    isFree: profile?.plan === 'free' || !profile?.plan,
+    isPro:             profile?.plan === 'pro',
+    isFree:            profile?.plan === 'free' || !profile?.plan,
     quotesCreatedCount: profile?.quotes_created_count || 0,
+    proExpiresAt,    // Date | null
+    proExpiresSoon,  // boolean: vence en < 7 días
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { useQuotes } from '../hooks/useQuotes'
 import { formatCLP, formatQuoteNumber, formatDate } from '../utils/formatters'
-import { FilePlus, FileText, TrendingUp, Clock, Zap, BadgeCheck } from 'lucide-react'
+import { FilePlus, FileText, TrendingUp, Clock, Zap, BadgeCheck, AlertTriangle } from 'lucide-react'
 import UpgradeModal from '../components/UpgradeModal'
 
 const FREE_LIMIT = 5
@@ -19,7 +19,7 @@ const statusLabel = {
 }
 
 export default function Dashboard() {
-  const { profile, isFree } = useAuth()
+  const { profile, isFree, proExpiresAt, proExpiresSoon } = useAuth()
   const navigate = useNavigate()
   const { quotes, loading, error, fetchQuotes, quotesCount, quotesCreatedCount, canCreate } = useQuotes()
   const [showUpgrade, setShowUpgrade] = useState(false)
@@ -62,7 +62,7 @@ export default function Dashboard() {
       {/* ── Indicador de plan ── */}
       {isFree
         ? <PlanUsageBar used={quotesCreatedCount} limit={FREE_LIMIT} onUpgrade={() => setShowUpgrade(true)} />
-        : <ProBadge />
+        : <ProBadge expiresAt={proExpiresAt} expiresSoon={proExpiresSoon} />
       }
 
       {/* ── Stats ── */}
@@ -211,12 +211,39 @@ function PlanUsageBar({ used, limit, onUpgrade }) {
   )
 }
 
-function ProBadge() {
+function ProBadge({ expiresAt, expiresSoon }) {
+  // Formato DD/MM/AAAA sin Intl para consistencia
+  function fmtDate(d) {
+    if (!d) return ''
+    const dd = String(d.getDate()).padStart(2, '0')
+    const mm = String(d.getMonth() + 1).padStart(2, '0')
+    return `${dd}/${mm}/${d.getFullYear()}`
+  }
+
+  if (expiresSoon) {
+    return (
+      <div className="card border border-amber-200 bg-amber-50 px-5 py-3">
+        <div className="flex items-center gap-2">
+          <AlertTriangle size={18} className="text-amber-500" />
+          <span className="text-sm font-semibold text-amber-800">Plan Pro</span>
+          <span className="text-sm text-amber-700">· Tu plan vence pronto</span>
+        </div>
+        {expiresAt && (
+          <p className="text-xs text-amber-600 font-medium mt-1 ml-6">
+            Vence el {fmtDate(expiresAt)} — renueva para no perder el acceso Pro.
+          </p>
+        )}
+      </div>
+    )
+  }
+
   return (
     <div className="card border border-green-200 bg-green-50 px-5 py-3 flex items-center gap-2">
       <BadgeCheck size={18} className="text-green-600" />
       <span className="text-sm font-semibold text-green-800">Plan Pro</span>
-      <span className="text-sm text-green-700">· Cotizaciones ilimitadas activas</span>
+      <span className="text-sm text-green-700">
+        {expiresAt ? `· Vence el ${fmtDate(expiresAt)}` : '· Cotizaciones ilimitadas activas'}
+      </span>
     </div>
   )
 }
