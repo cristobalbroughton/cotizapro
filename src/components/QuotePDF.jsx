@@ -291,6 +291,7 @@ export default function QuotePDF({ quote, profile }) {
   const subtotal = items.reduce((acc, it) => acc + itemSubtotal(it.quantity, it.unit_price), 0)
   const iva      = Math.round(subtotal * 0.19)
   const total    = subtotal + iva
+  const showIva  = quote.show_iva ?? true
 
   const emisionDate = fDate(quote.created_at)
   const expiryDate  = fExpiry(quote.validity_days, quote.created_at)
@@ -397,14 +398,18 @@ export default function QuotePDF({ quote, profile }) {
         {/* ── TOTALES ── */}
         <View style={s.totalsSection}>
           <View style={s.totalsBox}>
-            <View style={s.totalLineRow}>
-              <Text style={s.totalLineLabel}>Subtotal neto</Text>
-              <Text style={s.totalLineValue}>{fCLP(subtotal)}</Text>
-            </View>
-            <View style={s.totalLineRow}>
-              <Text style={s.totalLineLabel}>IVA (19%)</Text>
-              <Text style={s.totalLineValue}>{fCLP(iva)}</Text>
-            </View>
+            {showIva && (
+              <>
+                <View style={s.totalLineRow}>
+                  <Text style={s.totalLineLabel}>Subtotal neto</Text>
+                  <Text style={s.totalLineValue}>{fCLP(subtotal)}</Text>
+                </View>
+                <View style={s.totalLineRow}>
+                  <Text style={s.totalLineLabel}>IVA (19%)</Text>
+                  <Text style={s.totalLineValue}>{fCLP(iva)}</Text>
+                </View>
+              </>
+            )}
             <View style={s.grandRow}>
               <Text style={s.grandLabel}>TOTAL</Text>
               <Text style={s.grandValue}>{fCLP(total)}</Text>

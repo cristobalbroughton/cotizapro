@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useQuotes } from '../hooks/useQuotes'
+import { useAuth } from '../hooks/useAuth'
 import QuoteForm from '../components/QuoteForm'
 import UpgradeModal from '../components/UpgradeModal'
 import { ArrowLeft } from 'lucide-react'
 
 export default function NewQuote() {
   const { createQuote, canCreate } = useQuotes()
+  const { profile } = useAuth()
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
@@ -45,7 +47,11 @@ export default function NewQuote() {
         </div>
       )}
 
-      <QuoteForm onSubmit={handleSubmit} loading={loading} />
+      <QuoteForm
+        onSubmit={handleSubmit}
+        loading={loading}
+        defaultShowIva={profile?.show_iva ?? true}
+      />
     </div>
   )
 }

@@ -4,6 +4,31 @@ import { PlusCircle, Trash2, Save, Eye } from 'lucide-react'
 import { formatCLP, formatRUT } from '../utils/formatters'
 import { calcItemSubtotal, calcQuoteTotals } from '../utils/calculations'
 
+function IvaToggle({ value, onChange }) {
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        type="button"
+        role="switch"
+        aria-checked={value}
+        onClick={() => onChange(!value)}
+        className={`relative inline-flex h-5 w-9 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none ${
+          value ? 'bg-primary-700' : 'bg-gray-300'
+        }`}
+      >
+        <span
+          className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform ${
+            value ? 'translate-x-[18px]' : 'translate-x-1'
+          }`}
+        />
+      </button>
+      <span className="text-sm text-gray-600">
+        {value ? 'Mostrar IVA desglosado' : 'Ocultar desglose de IVA'}
+      </span>
+    </div>
+  )
+}
+
 const EMPTY_ITEM = { description: '', quantity: 1, unit_price: 0 }
 
 const DEFAULT_FORM = {
@@ -21,14 +46,15 @@ const DEFAULT_FORM = {
 /**
  * onSubmit(formData, mode) — mode: 'save' | 'preview'
  */
-export default function QuoteForm({ initialData, onSubmit, loading }) {
+export default function QuoteForm({ initialData, onSubmit, loading, defaultShowIva = true }) {
   const navigate  = useNavigate()
   const submitMode = useRef('save')
 
   const [form, setForm] = useState(() => ({
     ...DEFAULT_FORM,
     ...(initialData || {}),
-    items: initialData?.items?.length ? initialData.items : [{ ...EMPTY_ITEM }],
+    items:    initialData?.items?.length ? initialData.items : [{ ...EMPTY_ITEM }],
+    show_iva: initialData?.show_iva ?? defaultShowIva,
   }))
 
   const totals = calcQuoteTotals(form.items)
@@ -219,14 +245,25 @@ export default function QuoteForm({ initialData, onSubmit, loading }) {
         </button>
 
         {/* Totales en tiempo real */}
-        <div className="mt-6 pt-4 border-t border-gray-100 flex flex-col items-end gap-1.5">
-          <TotalRow label="Subtotal (neto)" value={totals.subtotal} />
-          <TotalRow label="IVA (19%)"       value={totals.iva_amount} />
-          <div className="flex items-center gap-16 pt-2 mt-1 border-t border-gray-300">
-            <span className="text-base font-bold text-gray-900">Total</span>
-            <span className="text-base font-bold text-primary-800 tabular-nums w-32 text-right">
-              {formatCLP(totals.total)}
-            </span>
+        <div className="mt-6 pt-4 border-t border-gray-100">
+          <div className="flex flex-col items-end gap-1.5">
+            {form.show_iva && (
+              <>
+                <TotalRow label="Subtotal (neto)" value={totals.subtotal} />
+                <TotalRow label="IVA (19%)"       value={totals.iva_amount} />
+              </>
+            )}
+            <div className={`flex items-center gap-16 w-full justify-end ${form.show_iva ? 'pt-2 mt-1 border-t border-gray-300' : ''}`}>
+              <span className="text-base font-bold text-gray-900">Total</span>
+              <span className="text-base font-bold text-primary-800 tabular-nums w-32 text-right">
+                {formatCLP(totals.total)}
+              </span>
+            </div>
+          </div>
+
+          {/* Toggle IVA */}
+          <div className="mt-4 pt-3 border-t border-gray-100">
+            <IvaToggle value={form.show_iva} onChange={v => setField('show_iva', v)} />
           </div>
         </div>
       </div>

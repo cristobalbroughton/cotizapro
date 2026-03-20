@@ -2,7 +2,7 @@ import { useState, useRef } from 'react'
 import { useAuth } from '../hooks/useAuth'
 import { supabase } from '../lib/supabase'
 import { formatRUT } from '../utils/formatters'
-import { Upload, X, CheckCircle, AlertCircle, Building2, User } from 'lucide-react'
+import { Upload, X, CheckCircle, AlertCircle, Building2, User, Receipt } from 'lucide-react'
 
 export default function Settings() {
   const { user, profile, updateProfile } = useAuth()
@@ -15,6 +15,7 @@ export default function Settings() {
     address:       profile?.address       || '',
     phone:         profile?.phone         || '',
     contact_email: profile?.contact_email || '',
+    show_iva:      profile?.show_iva ?? true,
   })
 
   const [logoPreview, setLogoPreview] = useState(profile?.logo_url || null)
@@ -243,6 +244,40 @@ export default function Settings() {
                 />
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* ── Sección: Opciones de cotización ── */}
+        <div className="card p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Receipt size={16} className="text-primary-700" />
+            <h3 className="font-semibold text-gray-800">Opciones de cotización</h3>
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-700">Mostrar IVA desglosado</p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {form.show_iva
+                  ? 'Las cotizaciones muestran Subtotal neto + IVA 19% + Total'
+                  : 'Las cotizaciones muestran solo el Total (sin desglose de IVA)'}
+              </p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={form.show_iva}
+              onClick={() => setField('show_iva', !form.show_iva)}
+              className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors focus:outline-none ${
+                form.show_iva ? 'bg-primary-700' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${
+                  form.show_iva ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
           </div>
         </div>
 

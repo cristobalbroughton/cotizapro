@@ -121,8 +121,9 @@ export default function ViewQuote() {
     )
   }
 
-  const totals = calcQuoteTotals(quote.items || [])
-  const expiry = getExpiry(quote.validity_days)
+  const totals  = calcQuoteTotals(quote.items || [])
+  const expiry  = getExpiry(quote.validity_days)
+  const showIva = quote.show_iva ?? true
 
   const profileComplete = !!(profile?.company && profile?.rut_empresa)
   const pdfFileName = `Cotizacion_${formatQuoteNumber(quote.quote_number)}_${sanitizeName(quote.client_name)}.pdf`
@@ -343,15 +344,19 @@ export default function ViewQuote() {
         {/* Totales */}
         <div className="flex justify-end mb-8">
           <div className="w-64">
-            <div className="flex justify-between text-sm py-2 border-b border-gray-100">
-              <span className="text-gray-500">Subtotal neto</span>
-              <span className="tabular-nums">{formatCLP(totals.subtotal)}</span>
-            </div>
-            <div className="flex justify-between text-sm py-2 border-b border-gray-100">
-              <span className="text-gray-500">IVA (19%)</span>
-              <span className="tabular-nums">{formatCLP(totals.iva_amount)}</span>
-            </div>
-            <div className="flex justify-between font-bold text-base bg-primary-800 text-white px-3 py-2.5 mt-2 rounded">
+            {showIva && (
+              <>
+                <div className="flex justify-between text-sm py-2 border-b border-gray-100">
+                  <span className="text-gray-500">Subtotal neto</span>
+                  <span className="tabular-nums">{formatCLP(totals.subtotal)}</span>
+                </div>
+                <div className="flex justify-between text-sm py-2 border-b border-gray-100">
+                  <span className="text-gray-500">IVA (19%)</span>
+                  <span className="tabular-nums">{formatCLP(totals.iva_amount)}</span>
+                </div>
+              </>
+            )}
+            <div className={`flex justify-between font-bold text-base bg-primary-800 text-white px-3 py-2.5 rounded ${showIva ? 'mt-2' : ''}`}>
               <span>TOTAL</span>
               <span className="tabular-nums">{formatCLP(totals.total)}</span>
             </div>
