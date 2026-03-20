@@ -166,7 +166,10 @@ export default function QuoteForm({ initialData, onSubmit, loading, defaultShowI
         <div className="hidden sm:grid grid-cols-12 gap-2 text-xs font-semibold text-gray-400 uppercase tracking-wide px-1 mb-2">
           <div className="col-span-6">Descripción</div>
           <div className="col-span-2 text-center">Cant.</div>
-          <div className="col-span-2 text-right">Precio unitario</div>
+          <div className="col-span-2 text-right flex items-center justify-end gap-1">
+            Precio unitario
+            <span title="Ingresa el precio final con IVA incluido" className="cursor-help text-gray-300 hover:text-gray-500 normal-case font-normal tracking-normal">ⓘ</span>
+          </div>
           <div className="col-span-1 text-right">Subtotal</div>
           <div className="col-span-1" />
         </div>
@@ -211,7 +214,6 @@ export default function QuoteForm({ initialData, onSubmit, loading, defaultShowI
                   value={item.unit_price}
                   onChange={e => updateItem(idx, 'unit_price', e.target.value)}
                 />
-                <p className="text-xs text-gray-400 mt-1 text-right">Precio c/ IVA</p>
               </div>
 
               {/* Subtotal calculado */}
@@ -250,7 +252,6 @@ export default function QuoteForm({ initialData, onSubmit, loading, defaultShowI
           <div className="flex flex-col items-end gap-1.5">
             {form.show_iva && (
               <>
-                <TotalRow label="Subtotal"   value={totals.subtotal} />
                 <TotalRow label="Monto Neto" value={totals.subtotal - totals.iva_amount} />
                 <TotalRow label="IVA (19%)"  value={totals.iva_amount} />
               </>
