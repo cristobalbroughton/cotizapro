@@ -88,22 +88,28 @@ export default function QuoteList() {
         {loading ? (
           <div className="py-16 text-center text-gray-400">Cargando...</div>
         ) : filtered.length === 0 ? (
-          <div className="py-16 text-center">
-            <FileText size={40} className="mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500">
-              {quotes.length === 0
-                ? 'Aún no tienes cotizaciones.'
-                : 'No se encontraron resultados para tu búsqueda.'}
-            </p>
-            {quotes.length === 0 && (
-              <button
-                onClick={handleNew}
-                className="btn-primary inline-flex items-center gap-2 mt-4"
-              >
-                <FilePlus size={16} /> Crear primera cotización
+          quotes.length === 0 ? (
+            /* Empty state para usuario sin cotizaciones */
+            <div className="py-16 text-center px-6">
+              <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-5">
+                <FileText size={40} className="text-primary-300" />
+              </div>
+              <h4 className="text-lg font-semibold text-gray-800 mb-2">Aún no tienes cotizaciones</h4>
+              <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">
+                Crea tu primera cotización en menos de 2 minutos. Ingresa los datos de tu cliente,
+                agrega tus productos o servicios y descarga un PDF profesional al instante.
+              </p>
+              <button onClick={handleNew} className="btn-primary inline-flex items-center gap-2">
+                <FilePlus size={16} /> + Crear primera cotización
               </button>
-            )}
-          </div>
+            </div>
+          ) : (
+            /* Sin resultados de búsqueda/filtro */
+            <div className="py-16 text-center">
+              <FileText size={36} className="mx-auto text-gray-300 mb-3" />
+              <p className="text-gray-500 text-sm">No se encontraron resultados para tu búsqueda.</p>
+            </div>
+          )
         ) : (
           <>
             {/* ── Desktop: tabla ── */}

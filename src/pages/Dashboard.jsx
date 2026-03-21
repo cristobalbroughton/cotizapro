@@ -32,6 +32,9 @@ export default function Dashboard() {
     .filter(q => q.status === 'aceptada')
     .reduce((s, q) => s + (parseFloat(q.total) || 0), 0)
 
+  const profileComplete = profile?.company && profile?.rut_empresa
+  const isNewUser       = !loading && quotesCount === 0
+
   function handleNew() {
     if (!canCreate) setShowUpgrade(true)
     else navigate('/quotes/new')
@@ -53,12 +56,30 @@ export default function Dashboard() {
             })}
           </p>
         </div>
-        <button onClick={handleNew} className="btn-primary flex items-center gap-2 flex-shrink-0">
+        <button
+          onClick={handleNew}
+          className={`btn-primary flex items-center gap-2 flex-shrink-0 ${isNewUser ? 'animate-pulse' : ''}`}
+        >
           <FilePlus size={16} />
           <span className="hidden sm:inline">Nueva cotización</span>
           <span className="sm:hidden">Nueva</span>
         </button>
       </div>
+
+      {/* ── Banner perfil incompleto ── */}
+      {!profileComplete && (
+        <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <p className="text-sm text-amber-800">
+            ⚠️ Completa el perfil de tu negocio para que aparezca en tus cotizaciones y PDFs.
+          </p>
+          <Link
+            to="/settings"
+            className="flex-shrink-0 text-xs font-semibold text-amber-800 hover:text-amber-900 underline underline-offset-2"
+          >
+            Completar perfil →
+          </Link>
+        </div>
+      )}
 
       {/* ── Indicador de plan ── */}
       {isFree
@@ -109,11 +130,17 @@ export default function Dashboard() {
             </button>
           </div>
         ) : recent.length === 0 ? (
-          <div className="py-12 text-center">
-            <FileText size={40} className="mx-auto text-gray-300 mb-3" />
-            <p className="text-gray-500">Aún no tienes cotizaciones.</p>
-            <button onClick={handleNew} className="btn-primary inline-flex items-center gap-2 mt-4">
-              <FilePlus size={16} /> Crear primera cotización
+          <div className="py-16 text-center px-6">
+            <div className="w-20 h-20 bg-primary-50 rounded-full flex items-center justify-center mx-auto mb-5">
+              <FileText size={40} className="text-primary-300" />
+            </div>
+            <h4 className="text-lg font-semibold text-gray-800 mb-2">Aún no tienes cotizaciones</h4>
+            <p className="text-gray-500 text-sm max-w-sm mx-auto mb-6">
+              Crea tu primera cotización en menos de 2 minutos. Ingresa los datos de tu cliente,
+              agrega tus productos o servicios y descarga un PDF profesional al instante.
+            </p>
+            <button onClick={handleNew} className="btn-primary inline-flex items-center gap-2">
+              <FilePlus size={16} /> + Crear mi primera cotización
             </button>
           </div>
         ) : (
