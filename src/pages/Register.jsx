@@ -1,31 +1,58 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { FileText, CheckCircle } from 'lucide-react'
 
+// ── Reglas de contraseña ──────────────────────────────────────
+const RULES = [
+  { key: 'length',    label: 'Mínimo 8 caracteres', test: p => p.length >= 8 },
+  { key: 'upper',     label: 'Una mayúscula',        test: p => /[A-Z]/.test(p) },
+  { key: 'lower',     label: 'Una minúscula',        test: p => /[a-z]/.test(p) },
+  { key: 'number',    label: 'Un número',            test: p => /[0-9]/.test(p) },
+]
+
+function getStrength(password) {
+  const passed = RULES.filter(r => r.test(password)).length
+  if (passed <= 1) return 'weak'
+  if (passed <= 3) return 'medium'
+  return 'strong'
+}
+
+const STRENGTH_CONFIG = {
+  weak:   { label: 'Débil',  color: 'bg-red-500',    width: 'w-1/3'  },
+  medium: { label: 'Media',  color: 'bg-yellow-400', width: 'w-2/3'  },
+  strong: { label: 'Fuerte', color: 'bg-green-500',  width: 'w-full' },
+}
+
+// ── Componente principal ──────────────────────────────────────
 export default function Register() {
   const { signUp } = useAuth()
-  const navigate   = useNavigate()
 
   const [form, setForm]       = useState({ fullName: '', email: '', password: '', confirm: '' })
   const [error, setError]     = useState('')
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [showStrength, setShowStrength] = useState(false)
+
+  const rules       = RULES.map(r => ({ ...r, passed: r.test(form.password) }))
+  const allPassed   = rules.every(r => r.passed)
+  const strength    = form.password.length > 0 ? getStrength(form.password) : null
+  const strengthCfg = strength ? STRENGTH_CONFIG[strength] : null
 
   async function handleSubmit(e) {
     e.preventDefault()
     setError('')
 
+    if (!allPassed) {
+      return setError('Tu contraseña debe cumplir todos los requisitos de seguridad.')
+    }
     if (form.password !== form.confirm) {
       return setError('Las contraseñas no coinciden.')
-    }
-    if (form.password.length < 6) {
-      return setError('La contraseña debe tener al menos 6 caracteres.')
     }
 
     setLoading(true)
     const { error } = await signUp({
-      email: form.email,
+      email:    form.email,
       password: form.password,
       fullName: form.fullName,
     })
@@ -106,16 +133,51 @@ export default function Register() {
               />
             </div>
 
+            {/* Contraseña + medidor de fortaleza */}
             <div>
               <label className="label">Contraseña</label>
               <input
                 type="password"
                 required
                 className="input-field"
-                placeholder="Mínimo 6 caracteres"
+                placeholder="Mínimo 8 caracteres"
                 value={form.password}
+                onFocus={() => setShowStrength(true)}
                 onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
               />
+
+              {showStrength && form.password.length > 0 && (
+                <div className="mt-2 space-y-2">
+                  {/* Barra de fortaleza */}
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full transition-all duration-300 ${strengthCfg.color} ${strengthCfg.width}`}
+                      />
+                    </div>
+                    <span className={`text-xs font-medium ${
+                      strength === 'weak'   ? 'text-red-500'    :
+                      strength === 'medium' ? 'text-yellow-500' : 'text-green-600'
+                    }`}>
+                      {strengthCfg.label}
+                    </span>
+                  </div>
+
+                  {/* Lista de requisitos */}
+                  <ul className="space-y-1">
+                    {rules.map(r => (
+                      <li key={r.key} className="flex items-center gap-1.5 text-xs">
+                        <span className={r.passed ? 'text-green-500' : 'text-gray-400'}>
+                          {r.passed ? '✓' : '✗'}
+                        </span>
+                        <span className={r.passed ? 'text-green-700' : 'text-gray-400'}>
+                          {r.label}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
 
             <div>
@@ -130,7 +192,11 @@ export default function Register() {
               />
             </div>
 
-            <button type="submit" disabled={loading} className="btn-primary w-full py-2.5">
+            <button
+              type="submit"
+              disabled={loading || !allPassed}
+              className="btn-primary w-full py-2.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
             </button>
 
