@@ -125,3 +125,61 @@ Los triggers usan `CREATE OR REPLACE TRIGGER` (no `CREATE TRIGGER`).
 git push origin main   # Vercel redeploy automático (~1-2 min)
 ```
 Variables de entorno en Vercel: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
+
+## Contexto de negocio
+- Mercado objetivo: pymes chilenas que cotizan frecuentemente
+- Nichos principales: construcción, servicios, freelancers
+- Problema que resuelve: pymes hacen cotizaciones en Word/Excel,
+  quedan poco profesionales y toman mucho tiempo
+- Diferenciador: simplicidad extrema + PDF profesional instantáneo
+- Modelo freemium validado: 5 cotizaciones gratis,
+  Pro $9.990 CLP/mes (Flow.cl pendiente inicio actividades SII)
+- Fase actual: MVP en producción buscando primeros usuarios pagos
+
+## Decisiones de producto tomadas (y por qué)
+- **SIN plantillas múltiples**: agrega fricción innecesaria en etapa
+  temprana; el usuario promedio elegiría la primera y nunca volvería
+- **SIN símbolo especial en contraseña**: genera abandono en registro
+  en usuarios no tech-savvy (dueños de pymes)
+- **Precio final con IVA incluido (no neto)**: las pymes piensan
+  en precio final, no en neto. Cambio hecho en v2 del formulario
+- **Subtotal eliminado del resumen**: era idéntico al Total,
+  generaba confusión. Solo mostrar Neto + IVA + Total
+- **Contador freemium histórico (no activo)**: evita abuso del plan
+  gratuito creando y eliminando cotizaciones infinitamente
+- **Flow.cl sobre Stripe**: Stripe no opera en Chile directamente
+- **Sidebar colapsable universal**: más espacio para el contenido,
+  look moderno similar a Notion/Linear
+
+## Lo que NO hacer
+- NO usar `Intl.NumberFormat` para moneda (falla en PDF worker)
+- NO bajar el contador `quotes_created_count` al eliminar cotización
+- NO mostrar Subtotal en el resumen de totales (decisión de producto)
+- NO agregar plantillas múltiples de PDF hasta tener usuarios pagando
+- NO integrar Flow.cl hasta tener inicio de actividades en SII
+- NO pedir símbolo especial en validación de contraseña
+
+## Usuarios y accesos
+- Cuenta owner (Cristóbal): plan Pro activado manualmente en Supabase
+- Primeros testers: activar Pro manualmente en profiles
+  hasta tener Flow integrado
+- Para activar Pro manual:
+  Supabase → Table Editor → profiles → editar fila →
+  `plan='pro'`, `pro_expires_at='2030-12-31'`
+
+## Historial de sesiones
+### Sesión 1 — 19/03/2026
+- Setup completo del proyecto
+- Auth, CRUD cotizaciones, PDF básico
+- Deploy inicial en Vercel
+
+### Sesión 2 — 21/03/2026
+- Precios con IVA incluido (v2 lógica de cálculo)
+- Toggle IVA desglosado/oculto
+- Sidebar colapsable + responsive móvil completo
+- Footer con contacto + política de privacidad
+- Validación contraseña segura con barra de fortaleza
+- Onboarding: empty state, banner perfil incompleto,
+  botón con pulso animado
+- `pro_expires_at` para control de vencimiento
+- CLAUDE.md creado y documentado
