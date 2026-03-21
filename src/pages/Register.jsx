@@ -133,6 +133,11 @@ export default function Register() {
             <button type="submit" disabled={loading} className="btn-primary w-full py-2.5">
               {loading ? 'Creando cuenta...' : 'Crear cuenta gratis'}
             </button>
+
+            <p className="mt-4 text-center text-xs text-gray-400">
+              🔒 Tus datos están cifrados y protegidos con estándares de la industria.
+              Nunca los compartimos con terceros.
+            </p>
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-600">

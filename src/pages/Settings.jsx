@@ -301,6 +301,10 @@ export default function Settings() {
         </div>
 
       </form>
+
+      <p className="text-xs text-gray-400 text-center mt-4">
+        🔒 Tu información está protegida y cifrada. Solo tú puedes ver los datos de tu negocio.
+      </p>
     </div>
   )
 }

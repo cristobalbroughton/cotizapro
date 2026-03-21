@@ -1,6 +1,6 @@
 import Header from './Header'
 import Sidebar from './Sidebar'
-import { Outlet } from 'react-router-dom'
+import { Outlet, Link } from 'react-router-dom'
 import { Mail, MessageCircle } from 'lucide-react'
 import { SidebarProvider } from '../context/SidebarContext'
 
@@ -34,6 +34,9 @@ function AppFooter() {
           <p className="text-sm font-semibold text-gray-600">CotizaPro</p>
           <p className="text-xs text-gray-400">Hecho en Chile 🇨🇱</p>
           <p className="text-xs text-gray-400">© 2026</p>
+          <Link to="/privacidad" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+            Política de privacidad
+          </Link>
         </div>
 
         <div className="text-right space-y-1">

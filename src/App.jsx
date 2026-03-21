@@ -14,6 +14,7 @@ import NewQuote       from './pages/NewQuote'
 import EditQuote      from './pages/EditQuote'
 import ViewQuote      from './pages/ViewQuote'
 import NotFound       from './pages/NotFound'
+import Privacy        from './pages/Privacy'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
           <Route path="/register"        element={<Register />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password"  element={<ResetPassword />} />
+          <Route path="/privacidad"      element={<Privacy />} />
 
           {/* ── Rutas protegidas ──
               ProtectedRoute redirige a /login si no hay sesión.
