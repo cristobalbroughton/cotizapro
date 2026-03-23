@@ -39,14 +39,14 @@ En el PDF worker usar `fCLP()` (misma lógica inline).
 `Intl` puede fallar en el worker de @react-pdf/renderer.
 
 ### Lógica de precios
-El usuario ingresa el **precio final (con IVA incluido)**.
-La app calcula hacia atrás:
+El usuario ingresa el **precio NETO (sin IVA)**.
+IVA se calcula hacia adelante sobre el subtotal total:
 ```
-Monto Neto = precio / 1.19  (redondeado sin decimales)
-IVA        = precio - neto
-Total      = precio ingresado (sin cambio)
+Subtotal Neto = suma de (qty × unit_price)
+IVA (19%)     = Math.round(subtotal × 0.19)
+Total         = subtotal + IVA
 ```
-El campo `unit_price` en BD guarda el precio final ingresado.
+El campo `unit_price` en BD guarda el precio neto ingresado.
 
 ### IVA toggle (show_iva)
 - Se guarda en `profiles.show_iva` (preferencia por defecto del usuario)
@@ -141,8 +141,9 @@ Variables de entorno en Vercel: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`
   temprana; el usuario promedio elegiría la primera y nunca volvería
 - **SIN símbolo especial en contraseña**: genera abandono en registro
   en usuarios no tech-savvy (dueños de pymes)
-- **Precio final con IVA incluido (no neto)**: las pymes piensan
-  en precio final, no en neto. Cambio hecho en v2 del formulario
+- **Precio neto estándar B2B**: modelo estándar de cotización —
+  el usuario ingresa neto y el IVA se aplica al total.
+  Revertido a este modelo en sesión 3.
 - **Subtotal eliminado del resumen**: era idéntico al Total,
   generaba confusión. Solo mostrar Neto + IVA + Total
 - **Contador freemium histórico (no activo)**: evita abuso del plan
