@@ -1,7 +1,7 @@
 import Header from './Header'
 import Sidebar from './Sidebar'
 import { Outlet, Link } from 'react-router-dom'
-import { Mail, MessageCircle } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import { SidebarProvider } from '../context/SidebarContext'
 
 export default function Layout() {
@@ -48,15 +48,7 @@ function AppFooter() {
             <Mail size={11} />
             soporte@cotizapro.cl
           </a>
-          <a
-            href="https://wa.me/56912345678"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-end gap-1.5 text-xs text-gray-500 hover:text-green-600 transition-colors"
-          >
-            <MessageCircle size={11} />
-            +56 9 1234 5678
-          </a>
+
         </div>
 
       </div>

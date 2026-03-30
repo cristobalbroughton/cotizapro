@@ -4,7 +4,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer'
 import { useQuotes } from '../hooks/useQuotes'
 import { useAuth } from '../hooks/useAuth'
 import { formatCLP, formatQuoteNumber, formatDate } from '../utils/formatters'
-import { calcQuoteTotals, calcItemSubtotal, calcExpiryDate as getExpiry } from '../utils/calculations'
+import { calcItemSubtotal, calcExpiryDate as getExpiry } from '../utils/calculations'
 import QuotePDF from '../components/QuotePDF'
 import {
   ArrowLeft, Pencil, Trash2, CheckCircle,
@@ -47,7 +47,7 @@ export default function ViewQuote() {
     const { data, error } = await getQuote(id)
     if (data) {
       setQuote(data)
-    } else if (error?.code === 'PGRST116' || !data) {
+    } else if (error?.code === 'PGRST116') {
       // PGRST116 = 0 rows → no existe o RLS bloqueó el acceso
       setNotFound(true)
     } else {
@@ -126,7 +126,11 @@ export default function ViewQuote() {
     )
   }
 
-  const totals  = calcQuoteTotals(quote.items || [])
+  const totals = {
+    subtotal:   parseFloat(quote.subtotal)   || 0,
+    iva_amount: parseFloat(quote.iva_amount) || 0,
+    total:      parseFloat(quote.total)      || 0,
+  }
   const expiry  = getExpiry(quote.validity_days)
   const showIva = quote.show_iva ?? true
 

@@ -20,7 +20,7 @@ export default function EditQuote() {
       else setQuote(data)
       setFetching(false)
     })
-  }, [id])
+  }, [id, getQuote])
 
   async function handleSubmit(formData, mode) {
     setError('')

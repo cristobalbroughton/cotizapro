@@ -226,7 +226,7 @@ function PlanUsageBar({ used, limit, onUpgrade }) {
             onClick={onUpgrade}
             className="flex items-center gap-1.5 text-xs font-semibold bg-primary-800 text-white px-3 py-1.5 rounded-lg hover:bg-primary-700 transition-colors"
           >
-            <Zap size={12} /> Upgradear a Pro
+            <Zap size={12} /> Actualizar a Pro
           </button>
         ) : (
           <span className="text-xs font-medium text-gray-400">{pct}%</span>
@@ -244,7 +244,7 @@ function PlanUsageBar({ used, limit, onUpgrade }) {
       {/* Mensaje contextual */}
       {isFull && (
         <p className="text-xs text-red-600 font-medium mt-2">
-          Alcanzaste el límite del plan gratuito. Upgradea para seguir creando cotizaciones.
+          Alcanzaste el límite del plan gratuito. Actualiza para seguir creando cotizaciones.
         </p>
       )}
       {isAlmost && (
@@ -257,14 +257,6 @@ function PlanUsageBar({ used, limit, onUpgrade }) {
 }
 
 function ProBadge({ expiresAt, expiresSoon }) {
-  // Formato DD/MM/AAAA sin Intl para consistencia
-  function fmtDate(d) {
-    if (!d) return ''
-    const dd = String(d.getDate()).padStart(2, '0')
-    const mm = String(d.getMonth() + 1).padStart(2, '0')
-    return `${dd}/${mm}/${d.getFullYear()}`
-  }
-
   if (expiresSoon) {
     return (
       <div className="card border border-amber-200 bg-amber-50 px-5 py-3">
@@ -275,7 +267,7 @@ function ProBadge({ expiresAt, expiresSoon }) {
         </div>
         {expiresAt && (
           <p className="text-xs text-amber-600 font-medium mt-1 ml-6">
-            Vence el {fmtDate(expiresAt)} — renueva para no perder el acceso Pro.
+            Vence el {formatDate(expiresAt?.toISOString())} — renueva para no perder el acceso Pro.
           </p>
         )}
       </div>
@@ -287,7 +279,7 @@ function ProBadge({ expiresAt, expiresSoon }) {
       <BadgeCheck size={18} className="text-green-600" />
       <span className="text-sm font-semibold text-green-800">Plan Pro</span>
       <span className="text-sm text-green-700">
-        {expiresAt ? `· Vence el ${fmtDate(expiresAt)}` : '· Cotizaciones ilimitadas activas'}
+        {expiresAt ? `· Vence el ${formatDate(expiresAt?.toISOString())}` : '· Cotizaciones ilimitadas activas'}
       </span>
     </div>
   )

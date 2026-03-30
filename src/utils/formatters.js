@@ -70,6 +70,7 @@ export function validateRUT(rut) {
 export function formatDate(dateStr) {
   if (!dateStr) return ''
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '—'
   return new Intl.DateTimeFormat('es-CL').format(date)
 }
 

@@ -1,4 +1,5 @@
-import { X, Zap, CheckCircle } from 'lucide-react'
+import { useState } from 'react'
+import { X, Zap, CheckCircle, Info } from 'lucide-react'
 
 const BENEFITS = [
   'Cotizaciones ilimitadas',
@@ -9,6 +10,8 @@ const BENEFITS = [
 ]
 
 export default function UpgradeModal({ onClose }) {
+  const [showComingSoon, setShowComingSoon] = useState(false)
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
@@ -52,13 +55,23 @@ export default function UpgradeModal({ onClose }) {
 
           <button
             className="btn-primary w-full py-3 text-base font-semibold flex items-center justify-center gap-2"
-            onClick={() => {
-              // Placeholder — aquí irá la integración con Flow.cl
-              alert('Próximamente disponible. ¡Gracias por tu interés!')
-            }}
+            onClick={() => setShowComingSoon(true)}
           >
             <Zap size={16} /> Actualizar a Pro
           </button>
+
+          {showComingSoon && (
+            <div className="mt-3 flex items-start gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2.5">
+              <Info size={15} className="text-blue-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-blue-800">
+                Próximamente disponible. Escríbenos a{' '}
+                <a href="mailto:soporte@cotizapro.cl" className="font-semibold underline underline-offset-2">
+                  soporte@cotizapro.cl
+                </a>{' '}
+                para activar tu plan Pro.
+              </p>
+            </div>
+          )}
 
           <button
             onClick={onClose}

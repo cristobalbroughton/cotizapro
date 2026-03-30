@@ -15,7 +15,7 @@ export function useQuotes() {
     setLoading(true)
     const { data, error } = await supabase
       .from('quotes')
-      .select('*')
+      .select('id, quote_number, client_name, client_email, created_at, total, status')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
 
@@ -99,7 +99,7 @@ export function useQuotes() {
     return { data, error }
   }
 
-  async function getQuote(id) {
+  const getQuote = useCallback(async (id) => {
     if (!user) return { data: null, error: { message: 'Not authenticated' } }
     const { data, error } = await supabase
       .from('quotes')
@@ -109,7 +109,7 @@ export function useQuotes() {
       .single()
 
     return { data, error }
-  }
+  }, [user])
 
   return {
     quotes,
