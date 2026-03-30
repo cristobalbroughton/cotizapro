@@ -22,6 +22,7 @@ export default function QuoteList() {
   const [search, setSearch]           = useState('')
   const [filterStatus, setFilter]     = useState('todos')
   const [deleting, setDeleting]       = useState(null)
+  const [deleteError, setDeleteError] = useState('')
   const [showUpgrade, setShowUpgrade] = useState(false)
 
   const filtered = quotes.filter(q => {
@@ -43,8 +44,10 @@ export default function QuoteList() {
   async function handleDelete(id) {
     if (!window.confirm('¿Eliminar esta cotización? Esta acción no se puede deshacer.')) return
     setDeleting(id)
-    await deleteQuote(id)
+    setDeleteError('')
+    const { error } = await deleteQuote(id)
     setDeleting(null)
+    if (error) setDeleteError('No se pudo eliminar la cotización. Intenta de nuevo.')
   }
 
   return (
@@ -82,6 +85,13 @@ export default function QuoteList() {
           <option value="rechazada">Rechazada</option>
         </select>
       </div>
+
+      {/* Error al eliminar */}
+      {deleteError && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+          {deleteError}
+        </div>
+      )}
 
       {/* Tabla */}
       <div className="card overflow-hidden">

@@ -4,7 +4,7 @@ import { PDFDownloadLink } from '@react-pdf/renderer'
 import { useQuotes } from '../hooks/useQuotes'
 import { useAuth } from '../hooks/useAuth'
 import { formatCLP, formatQuoteNumber, formatDate } from '../utils/formatters'
-import { calcQuoteTotals, calcExpiryDate as getExpiry } from '../utils/calculations'
+import { calcQuoteTotals, calcItemSubtotal, calcExpiryDate as getExpiry } from '../utils/calculations'
 import QuotePDF from '../components/QuotePDF'
 import {
   ArrowLeft, Pencil, Trash2, CheckCircle,
@@ -34,10 +34,11 @@ export default function ViewQuote() {
   const { profile } = useAuth()
   const navigate = useNavigate()
 
-  const [quote, setQuote]         = useState(null)
-  const [loading, setLoading]     = useState(true)
-  const [notFound, setNotFound]   = useState(false)
+  const [quote, setQuote]           = useState(null)
+  const [loading, setLoading]       = useState(true)
+  const [notFound, setNotFound]     = useState(false)
   const [fetchError, setFetchError] = useState(false)
+  const [deleteError, setDeleteError] = useState('')
 
   async function loadQuote() {
     setLoading(true)
@@ -60,8 +61,12 @@ export default function ViewQuote() {
 
   async function handleDelete() {
     if (!window.confirm('¿Eliminar esta cotización? Esta acción no se puede deshacer.')) return
-    await deleteQuote(id)
-    navigate('/quotes')
+    const { error } = await deleteQuote(id)
+    if (error) {
+      setDeleteError('No se pudo eliminar la cotización. Intenta de nuevo.')
+    } else {
+      navigate('/quotes')
+    }
   }
 
   async function handleStatus(status) {
@@ -190,6 +195,14 @@ export default function ViewQuote() {
           </button>
         </div>
       </div>
+
+      {/* ── Error al eliminar ── */}
+      {deleteError && (
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+          <AlertCircle size={15} className="flex-shrink-0" />
+          {deleteError}
+        </div>
+      )}
 
       {/* ── Aviso si falta perfil ── */}
       {!profileComplete && (
@@ -334,7 +347,7 @@ export default function ViewQuote() {
                   {formatCLP(item.unit_price)}
                 </td>
                 <td className="px-3 py-2.5 text-right font-medium border-b border-gray-100 tabular-nums">
-                  {formatCLP(item.quantity * item.unit_price)}
+                  {formatCLP(calcItemSubtotal(item.quantity, item.unit_price))}
                 </td>
               </tr>
             ))}

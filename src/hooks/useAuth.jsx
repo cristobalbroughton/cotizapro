@@ -30,30 +30,36 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function fetchProfile(userId) {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single()
 
-    // Si el plan Pro venció, degradar a free automáticamente
-    if (data?.plan === 'pro' && data?.pro_expires_at) {
-      const expired = new Date(data.pro_expires_at) < new Date()
-      if (expired) {
-        const { data: downgraded } = await supabase
-          .from('profiles')
-          .update({ plan: 'free' })
-          .eq('id', userId)
-          .select()
-          .single()
-        setProfile(downgraded ?? { ...data, plan: 'free' })
-        setLoading(false)
-        return
+      if (error) { setProfile(null); return }
+
+      // Si el plan Pro venció, degradar a free automáticamente
+      if (data?.plan === 'pro' && data?.pro_expires_at) {
+        const expired = new Date(data.pro_expires_at) < new Date()
+        if (expired) {
+          const { data: downgraded, error: downgradeErr } = await supabase
+            .from('profiles')
+            .update({ plan: 'free' })
+            .eq('id', userId)
+            .select()
+            .single()
+          // Si el downgrade falla, aplicamos el cambio solo en estado local
+          // para evitar loop de downgrade fallido en cada login
+          setProfile(downgradeErr ? { ...data, plan: 'free' } : downgraded)
+          return
+        }
       }
-    }
 
-    setProfile(data)
-    setLoading(false)
+      setProfile(data)
+    } finally {
+      setLoading(false)
+    }
   }
 
   async function signUp({ email, password, fullName }) {
@@ -87,6 +93,7 @@ export function AuthProvider({ children }) {
   }
 
   async function updateProfile(updates) {
+    if (!user) return { data: null, error: { message: 'No authenticated user' } }
     const { data, error } = await supabase
       .from('profiles')
       .update(updates)

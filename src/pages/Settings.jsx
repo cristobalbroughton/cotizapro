@@ -77,9 +77,13 @@ export default function Settings() {
 
     try {
       const logo_url = await uploadLogo()
-      await updateProfile({ ...form, logo_url })
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
+      const { error: profileErr } = await updateProfile({ ...form, logo_url })
+      if (profileErr) {
+        setError(profileErr.message || 'Ocurrió un error al guardar el perfil.')
+      } else {
+        setSaved(true)
+        setTimeout(() => setSaved(false), 3000)
+      }
     } catch (err) {
       setError(err.message || 'Ocurrió un error al guardar.')
     } finally {

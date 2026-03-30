@@ -5,8 +5,7 @@ import { useQuotes } from '../hooks/useQuotes'
 import { formatCLP, formatQuoteNumber, formatDate } from '../utils/formatters'
 import { FilePlus, FileText, TrendingUp, Clock, Zap, BadgeCheck, AlertTriangle } from 'lucide-react'
 import UpgradeModal from '../components/UpgradeModal'
-
-const FREE_LIMIT = 5
+import { FREE_LIMIT } from '../utils/constants'
 
 const statusBadge = {
   borrador:  'badge-borrador',

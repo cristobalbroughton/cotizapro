@@ -2,8 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { useAuth } from './useAuth'
 import { calcQuoteTotals } from '../utils/calculations'
-
-const FREE_LIMIT = 5
+import { FREE_LIMIT } from '../utils/constants'
 
 export function useQuotes() {
   const { user, isFree, quotesCreatedCount, incrementQuotesCount } = useAuth()
@@ -101,6 +100,7 @@ export function useQuotes() {
   }
 
   async function getQuote(id) {
+    if (!user) return { data: null, error: { message: 'Not authenticated' } }
     const { data, error } = await supabase
       .from('quotes')
       .select('*')
